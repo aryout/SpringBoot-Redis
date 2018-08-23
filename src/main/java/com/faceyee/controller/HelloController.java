@@ -11,7 +11,7 @@ import java.util.UUID;
 /**
  * Created by 97390 on 8/21/2018.
  */
-@RestController
+@RestController // 下面的方法的返回值直接输出到当前页面,没有作为跳转链接
 public class HelloController {
     @RequestMapping("/hello")
     public String hello(Locale locale, Model model) {

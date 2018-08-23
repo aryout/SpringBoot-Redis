@@ -1,6 +1,7 @@
 package com.faceyee.domain.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 //import org.springframework.data.annotation.Id;
@@ -17,7 +18,7 @@ import java.sql.Blob;
  */
 @Data
 @Entity
-@Table(name = "tbl_user") //指定数据库中对应的表名
+@Table(name = "tbl_user") //指定数据库中对应的表名,不加这个,只加entity也会做映射,默认用类名做表名
 public class User implements Serializable {
     // 不修改这个变量值的序列化实体都可以相互进行串行化和反串行化.
     // 怎么修改类文件,不修改这个UID值,都可以互相串化
@@ -38,6 +39,7 @@ public class User implements Serializable {
 
     @Max(value = 999999,message = "超过最大数值")
     @Min(value = 0,message = "密码设定不正确")
+    @JsonIgnore // Rest接口返回用户信息时,屏蔽密码,但不是不序列化到数据库,同时接受Rest登录请求时传入的密码使用的是UserModel对象,在那里不是JsonIgnore的,可以接受到
     private String passWord;
 
     @Column(name="monthly_income", precision=12, scale=2) // 精度为12位(总长度)，小数点位数为2位,为double字段,相当于double(12,2),在Java中是BigDecimal

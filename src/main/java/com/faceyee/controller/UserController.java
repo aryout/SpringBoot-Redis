@@ -1,28 +1,26 @@
 package com.faceyee.controller;
 
 import com.faceyee.domain.entity.User;
-import com.faceyee.domain.repository.UserRepository;
 import com.faceyee.service.UserService;
+import com.faceyee.utils.exception.PageNotFoundExcetion;
+import org.hibernate.sql.Update;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Controller;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import javax.validation.Valid;
 
 /**
  * Created by 97390 on 8/21/2018.
  */
-@RestController
+@Controller
 @RequestMapping(value = "/user") // 类声明为一级URL
 public class UserController {
     @Autowired // @Resource
     private UserService userService;
 
-    @Autowired
-    private UserRepository userRepository;
 
     @RequestMapping(value = "/index")// 类声明为二级URL
     public String index(){
@@ -32,7 +30,7 @@ public class UserController {
     @RequestMapping(value = "/show")  // http://localhost:8080/user/show?userName=
     @ResponseBody
     public String show(@RequestParam(value = "userName") String userName){
-        User user = userService.findUserByUserName(userName);
+        User user = userService.findByUserName(userName);
 
         if (user != null){
             return user.getId()+"/"+user.getUserName()+"/"+user.getPassWord();
@@ -42,16 +40,27 @@ public class UserController {
     @RequestMapping("/getUser")
     @Cacheable(value="user-key")
     public User getUser() {
-        User user=userRepository.findByUserName("aa");
+        User user=userService.findByUserName("aa");
         System.out.println("若下面没出现“无缓存的时候调用”字样且能打印出数据表示测试成功");
         return user;
     }
 
-    @RequestMapping("/getUsers")
-    @Cacheable(value="key-Users")
-    public List<User> getUsers() {
-        List<User> users=userRepository.findAll();
-        System.out.println("若下面没出现“无缓存的时候调用”字样且能打印出数据表示测试成功");
-        return users;
+//    @RequestMapping("/getUsers")
+//    @Cacheable(value="key-Users")
+//    public List<User> getUsers() {
+//        List<User> users=userService.findAll();
+//        System.out.println("若下面没出现“无缓存的时候调用”字样且能打印出数据表示测试成功");
+//        return users;
+//    }
+
+    @RequestMapping(value = "/businessExce")
+    void update(){
+        userService.testBusiness();
     }
+
+    @RequestMapping(value = "/notFound")
+    User testNotFound(){
+        throw new PageNotFoundExcetion(-404,"this page has not found");
+    }
+
 }
