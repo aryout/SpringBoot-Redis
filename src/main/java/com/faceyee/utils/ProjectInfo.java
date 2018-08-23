@@ -3,7 +3,6 @@ package com.faceyee.utils;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.stereotype.Component;
 
 /**
  * Created by 97390 on 8/21/2018.

@@ -30,8 +30,8 @@ public interface UserRepository extends JpaRepository<User, Long>{ // 两个泛�
                                                                     // 将方法参数与 JP QL 中的命名参数对应。可以不用管参数的位置
     User findByUserName(@Param("userName") String userName);
     // 等同于下面一句JPA 自动构造的语句
-    User findUserByName(String userName);
-    User findUserByNameOrEmail(String userName, String email); // 自动构造的语句,参数名要和实体属性严格一致,如name在实体里是name,那么在这里也得是name
+    User findUserByUserName(String userName);
+    User findUserByUserNameOrEmail(String userName, String email); // 自动构造的语句,参数名要和实体属性严格一致,如name在实体里是name,那么在这里也得是name
 
 
     /**
@@ -46,8 +46,8 @@ public interface UserRepository extends JpaRepository<User, Long>{ // 两个泛�
      * 注意：Modifying queries的返回值只能为void或者是int/Integer
      */
     @Modifying(clearAutomatically = true)
-    @Query("update User u set u.name = :name where u.id = :id")
-    int updateUserById(@Param("name") String name, @Param("id") int id);
+    @Query("update User u set u.userName = :userName where u.id = :id")
+    int updateUserById(@Param("userName") String userName, @Param("id") int id);
     /*它说的是可以清除底层持久化上下文，就是entityManager这个类，我们知道jpa底层实现会有二级缓存，也就是在更新完数据库后，如果后面去用这个对象，
     你再去查这个对象，这个对象是在一级缓存，但是并没有跟数据库同步，这个时候用clearAutomatically=true,就会刷新hibernate的一级缓存了，
     不然你在同一接口中，更新一个对象，接着查询这个对象，那么你查出来的这个对象还是之前的没有更新之前的状态*/

@@ -37,12 +37,12 @@ public class UserRepositotyTest {
 
     @Test
     public void findUserByName() throws Exception {
-        Assert.assertEquals("user1",userRepository.findUserByName("user1"));
+        Assert.assertEquals("user1",userRepository.findUserByUserName("user1"));
     }
 
     @Test
     public void findUserByNameOrEmail() throws Exception {
-        Assert.assertEquals("123", userRepository.findUserByNameOrEmail("user1", "aa@126.com").getPassWord());
+        Assert.assertEquals("123", userRepository.findUserByUserNameOrEmail("user1", "aa@126.com").getPassWord());
     }
 
     @After

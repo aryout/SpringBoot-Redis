@@ -11,13 +11,13 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserService {
     @Autowired
-    private UserRepository userRepositoty;
+    private UserRepository userRepository;
 
-    public User findUserByName(String name){ // service 的业务方法名往往和Dao的方法名匹配； 当然，复杂的业务方法会集合操作多个Dao方法，所以，事务是基于service的
+    public User findUserByUserName(String userName){ // service 的业务方法名往往和Dao的方法名匹配； 当然，复杂的业务方法会集合操作多个Dao方法，所以，事务是基于service的
         User user = null;
         try {
-            user = userRepositoty.findByUserName(name);
-        }catch (Exception e){}
+            user = userRepository.findByUserName(userName);
+        }catch (Exception ignored){}
 
         return user;
     }

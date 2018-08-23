@@ -10,7 +10,7 @@ import org.springframework.context.annotation.PropertySource;
  */
 @Configuration
 @PropertySource("classpath:config/redis.properties") // 不是用此注解匹配路径的话,只会默认扫描application这个文件而已
-@ConfigurationProperties(prefix = "redis.config")
+@ConfigurationProperties(prefix = "spring.redis")
 // @ConfigurationProperties("user") 可直接映射成一个类
 @Data
 public class JedisConfig {

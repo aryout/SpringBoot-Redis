@@ -4,6 +4,7 @@ package com.faceyee.configuration;
  * Created by 97390 on 8/22/2018.
  */
 
+import com.faceyee.utils.RedisUtil;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -22,6 +23,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.redis.cache.RedisCacheManager;
+import org.springframework.data.redis.connection.RedisPassword;
+import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
+import org.springframework.data.redis.connection.jedis.JedisClientConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
@@ -30,13 +34,11 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 
-import javax.annotation.Resource;
+import java.time.Duration;
 
 /**
  * Redis 配置类
  *
- * @author Leon
- * @version 2018/6/17 17:46
  */
 @Configuration
 @EnableCaching
@@ -63,7 +65,7 @@ public class RedisConfiguration extends CachingConfigurerSupport {
             sb.append(":");
             sb.append(method.getName());
             for (Object obj : params) {
-                sb.append(":" + String.valueOf(obj));
+                sb.append(":").append(String.valueOf(obj));
             }
             String rsToUse = String.valueOf(sb);
             lg.info("自动生成Redis Key -> [{}]", rsToUse);
@@ -71,6 +73,7 @@ public class RedisConfiguration extends CachingConfigurerSupport {
         };
     }
 
+    @SuppressWarnings("rawtypes")
     @Bean
     @Override
     public CacheManager cacheManager() {
@@ -82,7 +85,7 @@ public class RedisConfiguration extends CachingConfigurerSupport {
         return builder.build();
     }
 
-    @Bean
+    @Bean // spring 和 jedis 对话的 RedisTemplate
     public RedisTemplate<String, Object> redisTemplate(JedisConnectionFactory jedisConnectionFactory ) {
         //设置序列化
         Jackson2JsonRedisSerializer jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer(Object.class);
@@ -99,6 +102,9 @@ public class RedisConfiguration extends CachingConfigurerSupport {
         redisTemplate.setHashKeySerializer(stringSerializer); // Hash key序列化
         redisTemplate.setHashValueSerializer(jackson2JsonRedisSerializer); // Hash value序列化
         redisTemplate.afterPropertiesSet();
+
+        // 开启事务
+        redisTemplate.setEnableTransactionSupport(true);
         return redisTemplate;
     }
 
@@ -107,7 +113,7 @@ public class RedisConfiguration extends CachingConfigurerSupport {
     public CacheErrorHandler errorHandler() {
         // 异常处理，当Redis发生异常时，打印日志，但是程序正常走
         lg.info("初始化 -> [{}]", "Redis CacheErrorHandler");
-        CacheErrorHandler cacheErrorHandler = new CacheErrorHandler() {
+        return new CacheErrorHandler() {
             @Override
             public void handleCacheGetError(RuntimeException e, Cache cache, Object key) {
                 lg.error("Redis occur handleCacheGetError：key -> [{}]", key, e);
@@ -128,12 +134,17 @@ public class RedisConfiguration extends CachingConfigurerSupport {
                 lg.error("Redis occur handleCacheClearError：", e);
             }
         };
-        return cacheErrorHandler;
+    }
+
+    @Bean(name = "redisUtil") // 注入封装RedisTemplate
+    public RedisUtil redisUtil(RedisTemplate<String, Object> redisTemplate) {
+        RedisUtil redisUtil = new RedisUtil();
+        redisUtil.setRedisTemplate(redisTemplate);
+        return redisUtil;
     }
 
     /**
      * 此内部类就是把yml的配置数据，进行读取，创建JedisConnectionFactory和JedisPool，以供外部类初始化缓存管理器使用
-     * 不了解的同学可以去看@ConfigurationProperties和@Value的作用
      *
      */
     @Configuration
@@ -153,25 +164,29 @@ public class RedisConfiguration extends CachingConfigurerSupport {
         @Value("${spring.redis.jedis.pool.max-wait}")
         private long maxWaitMillis;
 
-        @Bean
+        @Bean // 连接工厂
         JedisConnectionFactory jedisConnectionFactory() {
             lg.info("Create JedisConnectionFactory successful");
-            JedisConnectionFactory factory = new JedisConnectionFactory();
-            factory.setHostName(host);
-            factory.setPort(port);
-            factory.setTimeout(timeout);
-            factory.setPassword(password);
-            return factory;
+//            JedisConnectionFactory factory = new JedisConnectionFactory(); 在2.0版本已经废弃
+//            factory.setHostName(host);
+            RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration(host, port);
+            redisStandaloneConfiguration.setPassword(RedisPassword.of(password));
+
+            JedisClientConfiguration.JedisClientConfigurationBuilder jedisClientConfiguration = JedisClientConfiguration.builder();
+            jedisClientConfiguration.connectTimeout(Duration.ofSeconds((long) timeout));// 'timeout's connection timeout,timeout是long型
+
+            return new JedisConnectionFactory(redisStandaloneConfiguration,
+                    jedisClientConfiguration.build());
+            //return new JedisConnectionFactory(redisStandaloneConfiguration); // 不设置Timeout时
         }
-        @Bean
+        @Bean // 连接池
         public JedisPool redisPoolFactory() {
             lg.info("JedisPool init successful，host -> [{}]；port -> [{}]", host, port);
             JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
             jedisPoolConfig.setMaxIdle(maxIdle);
             jedisPoolConfig.setMaxWaitMillis(maxWaitMillis);
 
-            JedisPool jedisPool = new JedisPool(jedisPoolConfig, host, port, timeout, password);
-            return jedisPool;
+            return new JedisPool(jedisPoolConfig, host, port, timeout, password);
         }
     }
 

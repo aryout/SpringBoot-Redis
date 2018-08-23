@@ -5,7 +5,6 @@ import com.faceyee.domain.repository.UserRepository;
 import com.faceyee.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -30,10 +29,10 @@ public class UserController {
         return "/user/index";
     } // 方法名往往和该级URL对应
 
-    @RequestMapping(value = "/show")  // http://localhost:8080/user/show?name=
+    @RequestMapping(value = "/show")  // http://localhost:8080/user/show?userName=
     @ResponseBody
     public String show(@RequestParam(value = "userName") String userName){
-        User user = userService.findUserByName(userName);
+        User user = userService.findUserByUserName(userName);
 
         if (user != null){
             return user.getId()+"/"+user.getUserName()+"/"+user.getPassWord();

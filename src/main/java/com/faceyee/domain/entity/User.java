@@ -1,8 +1,8 @@
 package com.faceyee.domain.entity;
 
-import lombok.AllArgsConstructor;
+
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
+
 //import org.springframework.data.annotation.Id;
 
 import javax.persistence.*; // Entity.Id.GeneratedValue
