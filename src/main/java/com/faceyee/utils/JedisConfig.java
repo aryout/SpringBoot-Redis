@@ -4,7 +4,6 @@ import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.stereotype.Component;
 
 /**
  * Created by 97390 on 8/22/2018.
@@ -12,7 +11,8 @@ import org.springframework.stereotype.Component;
 @Configuration
 @PropertySource("classpath:config/redis.properties") // 不是用此注解匹配路径的话,只会默认扫描application这个文件而已
 @ConfigurationProperties(prefix = "redis.config")
-@Data // 自动加getset等方法
+// @ConfigurationProperties("user") 可直接映射成一个类
+@Data
 public class JedisConfig {
 
     private int maxTotal;
