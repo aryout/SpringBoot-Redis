@@ -24,21 +24,4 @@ public class UserService {
         return user;
     }
 
-    @Transactional
-    public void testBusiness(){
-
-        // some database options
-
-        // 模拟新名字与其他名字冲突
-        isTrue(false, "名字已经被使用了...");
-
-        // update database dog info
-
-    }
-
-    public static void isTrue(boolean expression, String error){
-        if(!expression) {
-            throw new BusinessException(-3,error);
-        }
-    }
 }

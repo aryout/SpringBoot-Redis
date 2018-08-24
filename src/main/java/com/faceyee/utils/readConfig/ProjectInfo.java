@@ -1,4 +1,4 @@
-package com.faceyee.utils;
+package com.faceyee.utils.readConfig;
 
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;

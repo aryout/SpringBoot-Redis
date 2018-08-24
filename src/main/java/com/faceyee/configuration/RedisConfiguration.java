@@ -4,7 +4,7 @@ package com.faceyee.configuration;
  * Created by 97390 on 8/22/2018.
  */
 
-import com.faceyee.utils.RedisUtil;
+import com.faceyee.utils.common.RedisUtil;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;

@@ -1,6 +1,6 @@
 package com.faceyee.utils.exception;
 
-import com.faceyee.utils.restful.ResultStatusEnum;
+import com.faceyee.utils.restful.RestServiceModel;
 
 /**
  * Created by 97390 on 8/23/2018.
@@ -8,16 +8,15 @@ import com.faceyee.utils.restful.ResultStatusEnum;
 public class DescribeException extends RuntimeException{
 
     private Integer code;
-    private String message;
 
     /**
      * 继承exception，加入错误状态值
-     * @param resultStatusEnum
+     * @param restStatusEnum
      */
-    // 已知的异常enum构造excetion
-    public DescribeException(ResultStatusEnum resultStatusEnum) {
-        super(resultStatusEnum.getMsg());
-        this.code = resultStatusEnum.getCode();
+    // 已知的enum构造excetion
+    public DescribeException(RestServiceModel.RestStatusEnum restStatusEnum) {
+        super(restStatusEnum.getMsg());
+        this.code = restStatusEnum.getCode();
     }
 
     /**

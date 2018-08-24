@@ -2,15 +2,10 @@ package com.faceyee.controller;
 
 import com.faceyee.domain.entity.User;
 import com.faceyee.service.UserService;
-import com.faceyee.utils.exception.PageNotFoundExcetion;
-import org.hibernate.sql.Update;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
 
 /**
  * Created by 97390 on 8/21/2018.
@@ -52,15 +47,5 @@ public class UserController {
 //        System.out.println("若下面没出现“无缓存的时候调用”字样且能打印出数据表示测试成功");
 //        return users;
 //    }
-
-    @RequestMapping(value = "/businessExce")
-    void update(){
-        userService.testBusiness();
-    }
-
-    @RequestMapping(value = "/notFound")
-    User testNotFound(){
-        throw new PageNotFoundExcetion(-404,"this page has not found");
-    }
 
 }

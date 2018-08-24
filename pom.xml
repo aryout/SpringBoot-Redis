@@ -69,7 +69,7 @@
 			<!--pring-data-redis已经被引入依赖,不需要单独再引-->
 			<artifactId>spring-boot-starter-data-redis</artifactId>
 			<!-- 1.5的版本默认采用的连接池技术是jedis  2.0以上版本默认连接池是lettuce, 在这里采用jedis，所以需要排除lettuce的jar -->
-			<exclusions>
+			<exclusions> <!--在这里排除,在项目中用到也会自己引入的-->
 				<!--<exclusion>-->
 					<!--<groupId>io.lettuce</groupId>-->
 					<!--<artifactId>lettuce-core</artifactId>-->

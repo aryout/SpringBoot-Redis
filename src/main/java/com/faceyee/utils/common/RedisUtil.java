@@ -1,4 +1,4 @@
-package com.faceyee.utils;
+package com.faceyee.utils.common;
 
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.CollectionUtils;
