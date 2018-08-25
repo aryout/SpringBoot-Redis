@@ -8,6 +8,7 @@ import com.faceyee.utils.common.RedisUtil;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,18 +24,15 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.redis.cache.RedisCacheManager;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisPassword;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
-import org.springframework.data.redis.connection.jedis.JedisClientConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
-import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
-
-import java.time.Duration;
 
 /**
  * Redis 配置类
@@ -47,11 +45,12 @@ public class RedisConfiguration extends CachingConfigurerSupport {
     /**
      * Logger
      */
-    private static final Logger lg = LoggerFactory.getLogger(RedisConfiguration.class);
+    protected static final Logger lg = LoggerFactory.getLogger(RedisConfiguration.class);
 
 
     @Autowired
     private JedisConnectionFactory jedisConnectionFactory;
+
 
     @Bean
     @Override
@@ -86,7 +85,7 @@ public class RedisConfiguration extends CachingConfigurerSupport {
     }
 
     @Bean // spring 和 jedis 对话的 RedisTemplate
-    public RedisTemplate<String, Object> redisTemplate(JedisConnectionFactory jedisConnectionFactory ) {
+    public RedisTemplate<String, Object> redisTemplate( ) {
         //设置序列化
         Jackson2JsonRedisSerializer jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer(Object.class);
         ObjectMapper om = new ObjectMapper();
@@ -95,13 +94,14 @@ public class RedisConfiguration extends CachingConfigurerSupport {
         jackson2JsonRedisSerializer.setObjectMapper(om);
         // 配置redisTemplate
         RedisTemplate<String, Object> redisTemplate = new RedisTemplate<String, Object>();
-        redisTemplate.setConnectionFactory(jedisConnectionFactory);
+        redisTemplate.setConnectionFactory(jedisConnectionFactory); // 自己实现redisTemplate,就必须传入jedisConnectionFactory bean,那么就必须自己实现jedisConnectionFactory而不能自动配置
+
         RedisSerializer stringSerializer = new StringRedisSerializer();
         redisTemplate.setKeySerializer(stringSerializer); // key序列化
         redisTemplate.setValueSerializer(jackson2JsonRedisSerializer); // value序列化
         redisTemplate.setHashKeySerializer(stringSerializer); // Hash key序列化
         redisTemplate.setHashValueSerializer(jackson2JsonRedisSerializer); // Hash value序列化
-        redisTemplate.afterPropertiesSet();
+        //redisTemplate.afterPropertiesSet(); // 内部会调用的,不用在外面显式调用.RedisConnectionFactory is required
 
         // 开启事务
         redisTemplate.setEnableTransactionSupport(true);
@@ -143,51 +143,54 @@ public class RedisConfiguration extends CachingConfigurerSupport {
         return redisUtil;
     }
 
-    /**
-     * 此内部类就是把yml的配置数据，进行读取，创建JedisConnectionFactory和JedisPool，以供外部类初始化缓存管理器使用
-     *
-     */
-    @Configuration
-    @PropertySource("classpath:config/redis.properties")
-    @ConfigurationProperties
-    class DataJedisProperties{
-        @Value("${spring.redis.host}")
-        private  String host;
-        @Value("${spring.redis.password}")
-        private  String password;
-        @Value("${spring.redis.port}")
-        private  int port;
-        @Value("${spring.redis.timeout}")
-        private  int timeout;
-        @Value("${spring.redis.jedis.pool.max-idle}")
-        private int maxIdle;
-        @Value("${spring.redis.jedis.pool.max-wait}")
-        private long maxWaitMillis;
-
-        @Bean // 连接工厂
-        JedisConnectionFactory jedisConnectionFactory() {
-            lg.info("Create JedisConnectionFactory successful");
-//            JedisConnectionFactory factory = new JedisConnectionFactory(); 在2.0版本已经废弃
-//            factory.setHostName(host);
-            RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration(host, port);
-            redisStandaloneConfiguration.setPassword(RedisPassword.of(password));
-
-            JedisClientConfiguration.JedisClientConfigurationBuilder jedisClientConfiguration = JedisClientConfiguration.builder();
-            jedisClientConfiguration.connectTimeout(Duration.ofSeconds((long) timeout));// 'timeout's connection timeout,timeout是long型
-
-            return new JedisConnectionFactory(redisStandaloneConfiguration,
-                    jedisClientConfiguration.build());
-            //return new JedisConnectionFactory(redisStandaloneConfiguration); // 不设置Timeout时
-        }
-        @Bean // 连接池
-        public JedisPool redisPoolFactory() {
-            lg.info("JedisPool init successful，host -> [{}]；port -> [{}]", host, port);
-            JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
-            jedisPoolConfig.setMaxIdle(maxIdle);
-            jedisPoolConfig.setMaxWaitMillis(maxWaitMillis);
-
-            return new JedisPool(jedisPoolConfig, host, port, timeout, password);
-        }
+    @Bean
+    public String test(){
+        // 在这个bean中,调用了注入好的jedisConnectionFactory,可以看到,单机信息和池信息都能返回配置文件中的值
+        System.out.println("after_JedisConnectionFactory_DI)test: "+ jedisConnectionFactory.getHostName());
+        System.out.println("after_JedisConnectionFactory_DI)test: "+ jedisConnectionFactory.getPassword());
+        System.out.println("after_JedisConnectionFactory_DI)test: "+ jedisConnectionFactory.getDatabase());
+        System.out.println("after_JedisConnectionFactory_DI)test: : "+ jedisConnectionFactory.getUsePool());
+        System.out.println("after_JedisConnectionFactory_DI)test: : "+ jedisConnectionFactory.getPoolConfig().getMaxIdle());
+        return "nu";
     }
 
+    @Configuration
+    //@Data 自定义实体类时,需要配置get/set,但是这里是注入第三方包里的类,它的实现显然已经有get/set了,这里无需再加
+    @PropertySource("classpath:application.properties")
+    class RedisConfig {
+
+//        @Autowired
+//        JedisPoolConfig jedisPoolConfig;
+//
+//
+//        @Bean // 其实,在这里只是单纯的注入参数值,生成bean,我们知道,spring为我们的常用配置自动扫描生成bean(只要配置文件按照约定格式,而且不能在默认配置文件外,否则只能自己像这里一样手动创造配置类)
+//        // 包括JedisConnectionFactory,我们都可以不用再显式配置,jedisConnectionFactory被RedisTemplate包装好了,我们使用的是RedisTemplate来操作,如外部类那样.
+//        @ConfigurationProperties(prefix="spring.redis.poolconfig") // poolconfig在配置文件可以是驼峰,在这里得全是小写
+//        public JedisPoolConfig jedisPoolConfig(){
+//            JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
+//            System.out.println("(during_JedisPoolConfig_DI)jedisPoolConfig: "+ jedisPoolConfig.getMaxIdle()); // 还没有return回bean时,检验值都是未注入的,检验没有意义
+//            return jedisPoolConfig;
+//        }
+
+        @Bean() // 如果方法名不和bean名相等,会找不到,需要在bean注解这添加名字
+        @ConfigurationProperties(prefix="spring.redis") // 把poolconfig也包含在里面,所以这里也自动注入了jedisPoolConfig bean, 可以不再如上方法单独配置它
+        public JedisConnectionFactory jedisConnectionFactory(){
+            //System.out.println("(after_JedisPoolConfig_DI)jedisPoolConfig: "+ jedisPoolConfig.getMaxIdle()); // jedisPoolConfig这个bean是已经注入返回的bean,值是配置文件中注入的
+
+//            JedisConnectionFactory jedisConnectionFactory = new JedisConnectionFactory(redisStandaloneConfiguration);
+            // 要么使用redisStandaloneConfiguration,要么使用jedisPoolConfig,想两者都用,只能使用jedisPoolConfig本地构造
+            // DefaultJedisClientConfiguration对象,再和redisStandaloneConfiguration一起传入工厂构造器.但是报一个错.
+
+            JedisConnectionFactory jedisConnectionFactory = new JedisConnectionFactory();
+
+            System.out.println("(during_JedisConnectionFactory_DI)jedisPoolConfig: "+ jedisConnectionFactory.getPoolConfig().getMaxIdle());
+            // 虽然jedisConnectionFactory构造过程中需要jedisPoolConfig,并且jedisPoolConfig已经在之前注入成功,但是在jedisConnectionFactory这个bean
+            // 的构造返回之前(本方法体还未结束),读取它的成员jedisPoolConfig信息,都是默认的未被注入的值
+
+
+            lg.info("JedisPool init successful，host -> [{}]；port -> [{}]", jedisConnectionFactory.getHostName(), jedisConnectionFactory.getPort());
+            lg.info("Create JedisConnectionFactory successful");
+            return jedisConnectionFactory;
+        }
+    }
 }

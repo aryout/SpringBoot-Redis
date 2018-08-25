@@ -29,7 +29,7 @@ public class InterController {
         // 这种是接口,返回json数据,如果想登录成功后展示具体的html页面,就不要用Rest
     }
 
-    @RequestMapping("/submit")
+    @RequestMapping("/signup")
     public RestServiceModel submit(@RequestBody @Valid UserModel submitUser) { //  @Valid 参数校验
         User user = new User();
         user.setUserName(submitUser.getUserName());

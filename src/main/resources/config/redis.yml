@@ -1,0 +1,13 @@
+## 遵从spring自动配置的约定格式
+#spring:
+#  redis:
+#    dbIndex: 1
+#    hostName: 127.0.0.1
+#    password: 964988
+#    port: 6379
+#    timeout: 5000
+#    pool:
+#      maxIdle: 8
+#      minIdle: 0
+#      maxActive: 8
+#      maxWait: -13

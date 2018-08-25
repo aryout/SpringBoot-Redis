@@ -3,6 +3,7 @@ package com.faceyee.domain.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
+import org.springframework.stereotype.Component;
 
 //import org.springframework.data.annotation.Id;
 
