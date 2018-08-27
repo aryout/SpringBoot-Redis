@@ -2,23 +2,24 @@ package com.faceyee.controller;
 
 import com.faceyee.domain.entity.User;
 import com.faceyee.domain.repository.UserRepository;
+import com.faceyee.filter.PageObject;
+import com.faceyee.filter.PaginationContext;
 import com.faceyee.service.UserService;
+import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.Errors;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import com.github.pagehelper.PageInfo;
-import com.github.pagehelper.PageHelper;
 
 import javax.persistence.criteria.Predicate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by 97390 on 8/21/2018.
@@ -94,4 +95,16 @@ public class UserController {
     public long save(@RequestBody @Validated User user, Errors errors) {// @Validated注解当没使用Errors 类型的参数声明,Spring MVC 框架会抛出 MethodArgumentNotValidException 异常
         return userService.save(user);
     }
+
+/*    public PageObject<User> getUserByNoAndEmail(String no, String email) {
+    Map<String, Object> map = new HashMap<>();
+    map.put("no", no);
+    map.put("email", email);
+
+    PageHelper.startPage(PaginationContext.getPageNum(), PaginationContext.getPageSize());
+    // 因为分页查询结果返回的是一个 Page 对象，而 Page 对象继承自ArrayList
+     List<User> list = this.userMapper.getUserByNoAndEmail(map);
+     // 前台页面就可以根据PageBean中包括的属性来进行分页显示了
+    return new PageObject<User>(list);
+    }*/
 }

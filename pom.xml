@@ -4,11 +4,11 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.faceyee</groupId>
-	<artifactId>springbootdemo1</artifactId>
+	<artifactId>SpringBoot-Redis</artifactId> <!--生成xxx.iml文件，是idea的project名字的中括号内名字-->
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
-	<name>springbootdemo1</name>
+	<name>springbootdemo1</name> <!--而不是这-->
 	<description>Demo project for Spring Boot</description>
 
 	<parent>

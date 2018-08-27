@@ -21,7 +21,7 @@ public class WebConfiguration {
         return new RemoteIpFilter();
     }
 
-    @Bean
+    @Bean // 通过代码注册的方式来使用Filter
     public FilterRegistrationBean testFilterRegistration() {
 
         FilterRegistrationBean registration = new FilterRegistrationBean();

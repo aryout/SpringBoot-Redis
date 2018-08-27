@@ -10,10 +10,10 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 
 @SpringBootApplication
 @ComponentScan(basePackages = "com.faceyee") // 配置包根路径
-public class Springbootdemo1Application {
+public class SpringbootRedisApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(Springbootdemo1Application.class, args);
+		SpringApplication.run(SpringbootRedisApplication.class, args);
 
 	}
 }
