@@ -22,6 +22,6 @@ public class ThymeleafController {
         String formattedDate = dateFormat.format(date);
         model.addAttribute("currentTime", formattedDate);
 
-        return "redirect:hello";
+        return "redirect:helloDemo";
     }
 }

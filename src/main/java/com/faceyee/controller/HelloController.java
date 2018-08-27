@@ -15,7 +15,7 @@ import java.util.UUID;
 public class HelloController {
     @RequestMapping("/hello")
     public String hello(Locale locale, Model model) {
-        return "hello world";
+        return "helloDemo world";
     }
 
     @RequestMapping("/uid")

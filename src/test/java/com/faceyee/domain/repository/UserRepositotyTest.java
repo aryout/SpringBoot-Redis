@@ -29,7 +29,7 @@ public class UserRepositotyTest {
         DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG);
         String formattedDate = dateFormat.format(new Date()); // Date 是用util包的?
 
-        userRepository.save(new User("user1", "123","aa@126.com", formattedDate, null));
+        userRepository.save(new User("user1", "123","aa@126.com"));
 
         Assert.assertEquals("user1",userRepository.findByUserName("user1"));
 

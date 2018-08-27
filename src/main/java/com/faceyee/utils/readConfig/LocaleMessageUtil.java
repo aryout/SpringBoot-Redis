@@ -19,9 +19,7 @@ public class LocaleMessageUtil {
 
     public RestServiceError getLocalErrorMessage(RestServiceError.Type errorCode) {
         Locale locale = LocaleContextHolder.getLocale();
-        String errorMessage = messageSource.getMessage(errorCode.getCode(), null, locale);
-        RestServiceError error = RestServiceError.build(errorCode, errorMessage);
-        return error;
+        String errorMessage = messageSource.getMessage(String.valueOf(errorCode.getCode()), null, locale);
+        return RestServiceError.build(errorCode, errorMessage);
     }
-
 }

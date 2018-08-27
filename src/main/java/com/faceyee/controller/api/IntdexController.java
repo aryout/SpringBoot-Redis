@@ -13,7 +13,7 @@ import javax.validation.Valid;
  * Created by 97390 on 8/23/2018.
  */
 @RestController
-public class InterController {
+public class IntdexController {
     @RequestMapping("/login")
     // 直接在映射方法里面使用实体进行参数接收,这样,请求报文也是Json格式的(@RequestBody修饰)
     public RestServiceModel login(@RequestBody @Valid UserModel loginUser) { //  @Valid 参数校验
@@ -25,15 +25,15 @@ public class InterController {
 
         user.setUserName(loginUser.getUserName());
         user.setPassWord(loginUser.getPassWord());
-        return new RestServiceModel(RestServiceModel.RestStatusEnum.SUCCESS, user);
+        return new RestServiceModel(true,0,"login success", user);
         // 这种是接口,返回json数据,如果想登录成功后展示具体的html页面,就不要用Rest
     }
 
     @RequestMapping("/signup")
-    public RestServiceModel submit(@RequestBody @Valid UserModel submitUser) { //  @Valid 参数校验
+    public RestServiceModel submit(@RequestBody @Valid UserModel signupUser) { //  @Valid 参数校验
         User user = new User();
-        user.setUserName(submitUser.getUserName());
-        user.setPassWord(submitUser.getPassWord());
-        return new RestServiceModel(RestServiceModel.RestStatusEnum.SUCCESS, user);
+        user.setUserName(signupUser.getUserName());
+        user.setPassWord(signupUser.getPassWord());
+        return new RestServiceModel(true,0,"sighup success", user);
     }
 }

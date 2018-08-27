@@ -1,4 +1,4 @@
-package com.faceyee.controller.view;
+package com.faceyee.configuration;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;

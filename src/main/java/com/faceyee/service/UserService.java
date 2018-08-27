@@ -1,27 +1,16 @@
 package com.faceyee.service;
 
-import com.faceyee.domain.repository.UserRepository;
 import com.faceyee.domain.entity.User;
-import com.faceyee.utils.exception.BusinessException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import com.github.pagehelper.PageInfo;
 
 /**
- * Created by 97390 on 8/21/2018.
+ * Created by 97390 on 8/26/2018.
  */
-@Service
-public class UserService {
-    @Autowired
-    private UserRepository userRepository;
+public interface UserService {
 
-    public User findByUserName(String userName){ // service 的业务方法名往往和Dao的方法名匹配； 当然，复杂的业务方法会集合操作多个Dao方法，所以，事务是基于service的
-        User user = null;
-        try {
-            user = userRepository.findByUserName(userName);
-        }catch (Exception ignored){}
+    public PageInfo<User> findAllUserList(int pageNum, int pageSize);
 
-        return user;
-    }
+    public User findByUserName(String userName);
 
+    public long save(User user);
 }

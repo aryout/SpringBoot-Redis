@@ -1,9 +1,10 @@
-package com.faceyee.configuration;
+package com.faceyee.Filter;
 
 import org.apache.catalina.filters.RemoteIpFilter;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
@@ -32,7 +33,7 @@ public class WebConfiguration {
         return registration;
     }
 
-    public class MyFilter implements Filter {
+    class MyFilter implements Filter {
         @Override
         public void destroy() {
             // TODO Auto-generated method stub
@@ -51,5 +52,10 @@ public class WebConfiguration {
         public void init(FilterConfig arg0) throws ServletException {
             // TODO Auto-generated method stub
         }
+    }
+
+    @Bean // 解决懒加载时加载完以后Session关闭导致的No Session异常
+    public OpenEntityManagerInViewFilter openEntityManagerInViewFilter() {
+        return new OpenEntityManagerInViewFilter();
     }
 }

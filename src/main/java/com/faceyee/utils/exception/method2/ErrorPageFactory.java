@@ -1,4 +1,4 @@
-package com.faceyee.utils.exception;
+package com.faceyee.utils.exception.method2;
 
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.server.ErrorPage;

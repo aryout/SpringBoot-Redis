@@ -32,7 +32,7 @@ public class User implements Serializable {
     @Column(insertable = false, updatable = false, name = "id", nullable = false, columnDefinition = "BIGINT UNSIGNED") // 字段值为只读的，不允许插入和修改。通常用于主键和外键.bigint(20),在Java中是Long
     private Long id;
 
-    @Column(length = 12, nullable = false, unique = true) // varchar(36)
+    @Column(insertable = false,length = 12, nullable = false, unique = true) // varchar(36)
     private String uuid;
 
     @Column(name="user_name",nullable = false, unique = true, length=512) // length 表示varchar字段,在Java中是String
@@ -55,7 +55,7 @@ public class User implements Serializable {
     @Transient  // 不映射成列的字段得加@Transient 瞬态注解
     private String randomName; // 随机名,如脉脉匿名区
 
-    @Column(nullable = false, columnDefinition="DATE") // 对于插入Date无法确定数据库中字段类型究竟是DATE,TIME 还是 TIMESTAMP,需要在这里直接指定
+    @Column(insertable = false,nullable = false, columnDefinition="DATE") // 对于插入Date无法确定数据库中字段类型究竟是DATE,TIME 还是 TIMESTAMP,需要在这里直接指定
     private String regTime;
 
     @Lob
@@ -63,7 +63,7 @@ public class User implements Serializable {
     public String content;  // String 的默认映射类型为 VARCHAR, 将 String 类型映射到特定数据库的 TEXT 字段类型
 
     @Lob
-    @Column(length=8, columnDefinition="BLOB")
+    @Column(insertable = false,length=8, columnDefinition="BLOB")
     private Blob pic; // image对象
 
     /*Lob代表大对象数据，包括BLOB和CLOB两种类型数据，前者用于存储大块的二进制数据，如图片和视频数据等，
@@ -81,12 +81,10 @@ public class User implements Serializable {
     public User(){
         super();
     }
-    public User(String email, String randomName, String passWord, String userName, String regTime) {
+    public User(String email,String passWord, String userName) {
         super();
         this.email = email;
-        this.randomName = randomName;
         this.passWord = passWord;
         this.userName = userName;
-        this.regTime = regTime;
     }
 }
