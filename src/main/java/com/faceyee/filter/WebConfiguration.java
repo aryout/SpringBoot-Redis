@@ -1,4 +1,4 @@
-package com.faceyee.Filter;
+package com.faceyee.filter;
 
 import org.apache.catalina.filters.RemoteIpFilter;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
